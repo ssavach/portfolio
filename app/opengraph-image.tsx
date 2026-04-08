@@ -8,40 +8,27 @@ export const size = {
 };
 export const contentType = "image/png";
 
-async function loadGoogleFont(
-  family: string,
-  weight: number,
-): Promise<ArrayBuffer> {
-  const cssUrl = `https://fonts.googleapis.com/css2?family=${family}:wght@${weight}&display=swap`;
-  const cssResponse = await fetch(cssUrl, {
-    headers: {
-      // IE 6 User-Agent forces Google Fonts to return TTF.
-      // satori (used by @vercel/og) does NOT support WOFF2 — only TTF/OTF/WOFF.
-      "User-Agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)",
-    },
-  });
-  const css = await cssResponse.text();
-  // With IE 6 UA, Google Fonts returns TTF via the legacy /l/font endpoint,
-  // which omits the format() declaration entirely. Just grab the first url().
-  const match = css.match(/src:\s*url\((.+?)\)/);
-  if (!match) {
-    throw new Error(
-      `Could not find ${family} ${weight} font URL. CSS: ${css.slice(0, 300)}`,
-    );
+// Fetching Inter directly from @fontsource via jsdelivr as WOFF 1.1.
+// Why not Google Fonts: with a modern UA it returns WOFF2 (satori can't parse),
+// with an IE 6 UA it returns EOT (Embedded OpenType, also unsupported by satori).
+// @fontsource publishes per-weight WOFF files — the simplest working path.
+const INTER_REGULAR_URL =
+  "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.2.8/files/inter-latin-400-normal.woff";
+const INTER_BOLD_URL =
+  "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.2.8/files/inter-latin-800-normal.woff";
+
+async function loadFont(url: string): Promise<ArrayBuffer> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch font ${url}: ${response.status}`);
   }
-  const fontResponse = await fetch(match[1]);
-  if (!fontResponse.ok) {
-    throw new Error(
-      `Failed to fetch ${family} ${weight} font file: ${fontResponse.status}`,
-    );
-  }
-  return await fontResponse.arrayBuffer();
+  return await response.arrayBuffer();
 }
 
 export default async function Image() {
   const [interRegular, interBold] = await Promise.all([
-    loadGoogleFont("Inter", 400),
-    loadGoogleFont("Inter", 800),
+    loadFont(INTER_REGULAR_URL),
+    loadFont(INTER_BOLD_URL),
   ]);
 
   return new ImageResponse(

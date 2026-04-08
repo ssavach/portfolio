@@ -15,16 +15,26 @@ async function loadGoogleFont(
   const cssUrl = `https://fonts.googleapis.com/css2?family=${family}:wght@${weight}&display=swap`;
   const cssResponse = await fetch(cssUrl, {
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      // IE 6 User-Agent forces Google Fonts to return TTF.
+      // satori (used by @vercel/og) does NOT support WOFF2 — only TTF/OTF/WOFF.
+      "User-Agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)",
     },
   });
   const css = await cssResponse.text();
   const match = css.match(
-    /src: url\((.+?)\) format\('(?:opentype|truetype|woff2?)'\)/,
+    /src:\s*url\((.+?)\)\s*format\('(?:truetype|opentype|woff)'\)/,
   );
-  if (!match) throw new Error(`Could not find ${family} ${weight} font URL`);
+  if (!match) {
+    throw new Error(
+      `Could not find ${family} ${weight} TTF URL. CSS: ${css.slice(0, 300)}`,
+    );
+  }
   const fontResponse = await fetch(match[1]);
+  if (!fontResponse.ok) {
+    throw new Error(
+      `Failed to fetch ${family} ${weight} font file: ${fontResponse.status}`,
+    );
+  }
   return await fontResponse.arrayBuffer();
 }
 

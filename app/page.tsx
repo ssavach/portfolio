@@ -1,12 +1,8 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Github,
-  MessageCircle,
-  Sparkles,
-} from "lucide-react";
+import { ArrowUpRight, Github, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DiscordCopyButton } from "@/components/discord-copy-button";
 
 const studying = [
   { topic: "Design patterns", detail: "GoF en TypeScript" },
@@ -315,17 +311,7 @@ export default function Home() {
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="group border-accent/40 hover:border-accent hover:bg-accent/10"
-          >
-            <Link href="#">
-              <MessageCircle className="h-4 w-4" />
-              Discord
-            </Link>
-          </Button>
+          <DiscordCopyButton />
         </div>
       </section>
 

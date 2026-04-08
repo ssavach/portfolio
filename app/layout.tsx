@@ -8,9 +8,29 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ssavach.me"),
   title: "Savach",
   description:
-    "Savach — estudiante. Obsesionado con entender qué hay debajo.",
+    "Estudiante. Curioso crónico. Obsesionado con entender qué hay debajo — no qué librería usar.",
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    url: "https://ssavach.me",
+    siteName: "Savach",
+    title: "Savach — estudiante, curioso, constructor",
+    description:
+      "Un estudiante obsesionado con los fundamentos. Next.js, TypeScript, shadcn/ui. Construyo para entender.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Savach — estudiante, curioso, constructor",
+    description:
+      "Un estudiante obsesionado con los fundamentos. Next.js, TypeScript, shadcn/ui. Construyo para entender.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

@@ -21,12 +21,12 @@ async function loadGoogleFont(
     },
   });
   const css = await cssResponse.text();
-  const match = css.match(
-    /src:\s*url\((.+?)\)\s*format\('(?:truetype|opentype|woff)'\)/,
-  );
+  // With IE 6 UA, Google Fonts returns TTF via the legacy /l/font endpoint,
+  // which omits the format() declaration entirely. Just grab the first url().
+  const match = css.match(/src:\s*url\((.+?)\)/);
   if (!match) {
     throw new Error(
-      `Could not find ${family} ${weight} TTF URL. CSS: ${css.slice(0, 300)}`,
+      `Could not find ${family} ${weight} font URL. CSS: ${css.slice(0, 300)}`,
     );
   }
   const fontResponse = await fetch(match[1]);
